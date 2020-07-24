@@ -1,0 +1,3 @@
+[submodule "Source/ThirdParty/EnttUELibrary/entt"]
+	path = Source/ThirdParty/EnttUELibrary/entt
+	url = https://github.com/tigerchanay/entt.git
