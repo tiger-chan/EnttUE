@@ -10,7 +10,7 @@ public class EnttUELibrary : ModuleRules
 	{
 		Type = ModuleType.External;
 
-		var plugin_dir = Path.Combine(PluginDirectory, "ThirdParty", "EnttUELibrary");
+		var plugin_dir = Path.Combine(ModuleDirectory);
 
 		PublicIncludePaths.AddRange(new string[] {
 				Path.Combine(plugin_dir, "entt", "src")

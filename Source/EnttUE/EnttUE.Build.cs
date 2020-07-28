@@ -1,18 +1,21 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.IO;
 
 public class EnttUE : ModuleRules
 {
 	public EnttUE(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		//PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		PCHUsage = PCHUsageMode.NoSharedPCHs;
+		PrivatePCHHeaderFile = "EnttUE.h";
+		CppStandard = CppStandardVersion.Cpp17;
+		bEnableExceptions = true;
 
-		PublicIncludePaths.AddRange(
-			new string[] {
-				// ... add public include paths required here ...
-			}
-			);
+		PublicIncludePaths.AddRange(new string[] {
+				Path.Combine(ModuleDirectory, "src")
+			});
 
 
 		PrivateIncludePaths.AddRange(

@@ -1,0 +1,7 @@
+* text eol=lf
+
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+*.cpp text
+*.hpp text
+*.h text
