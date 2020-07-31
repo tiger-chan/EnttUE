@@ -6,6 +6,17 @@
 namespace tc
 {
 class world {
+    public:
+	ecs_registry &get_registry()
+	{
+		return registry;
+	}
+	
+	const ecs_registry &get_registry() const
+	{
+		return registry;
+	}
+
     private:
 	ecs_registry registry;
 };
