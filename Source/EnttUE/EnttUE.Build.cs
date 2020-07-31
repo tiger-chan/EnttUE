@@ -9,12 +9,13 @@ public class EnttUE : ModuleRules
 	{
 		//PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PCHUsage = PCHUsageMode.NoSharedPCHs;
-		PrivatePCHHeaderFile = "EnttUE.h";
+		PrivatePCHHeaderFile = Path.Combine(ModuleDirectory, "ue-src", "EnttUE.h");
 		CppStandard = CppStandardVersion.Cpp17;
 		bEnableExceptions = true;
 
 		PublicIncludePaths.AddRange(new string[] {
-				Path.Combine(ModuleDirectory, "src")
+				Path.Combine(ModuleDirectory, "src"),
+				Path.Combine(ModuleDirectory, "ue-src")
 			});
 
 
@@ -30,7 +31,7 @@ public class EnttUE : ModuleRules
 			{
 				"Core",
 				"EnttUELibrary",
-				"Projects"
+				"Projects",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -40,6 +41,8 @@ public class EnttUE : ModuleRules
 			new string[]
 			{
 				// ... add private dependencies that you statically link with here ...	
+				"Engine",
+				"CoreUObject",
 			}
 			);
 
