@@ -1,10 +1,13 @@
 #pragma once
 
-#include "CoreMinimal.h"
-#include "entt/entt.hpp"
+#include "entt/entity/fwd.hpp"
 
 namespace tc
 {
+struct entity_handle;
+
 using ecs_registry = entt::registry;
+
+class world;
 
 } // namespace tc

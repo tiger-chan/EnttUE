@@ -1,24 +1,48 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ecs_registry.hpp"
+#include "fwd.hpp"
+#include "entt/entity/registry.hpp"
+#include "jobs/sync_job_processor.hpp"
+#include "jobs/async_job_processor.hpp"
 
 namespace tc
 {
 class world {
     public:
-	ecs_registry &get_registry()
+	world(bool run_parallel = false) : processor_{ tc::make_processor(run_parallel) }
 	{
-		return registry;
 	}
-	
-	const ecs_registry &get_registry() const
+
+	void execute(float delta_time)
 	{
-		return registry;
+		processor_->execute(registry_);
+	}
+
+	ecs_registry &registry()
+	{
+		return registry_;
+	}
+
+	const ecs_registry &registry() const
+	{
+		return registry_;
+	}
+
+	template <typename Job> void register_job()
+	{
+		processor_->register_job<Job>(this);
+	}
+
+	template <typename Job> Job *get_or_create_job()
+	{
+		return processor_->get_or_create_job<Job>(this);
 	}
 
     private:
-	ecs_registry registry;
+	ecs_registry registry_;
+
+	TUniquePtr<job_processor> processor_;
 };
 
 } // namespace tc

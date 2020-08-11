@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CoreMinimal.h"
+#include "entt/entity/registry.hpp"
 #include "core/component_authoring.h"
 #include "scale.generated.h"
 

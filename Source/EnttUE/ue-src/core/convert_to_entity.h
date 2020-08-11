@@ -4,14 +4,14 @@
 #include "Components/ActorComponent.h"
 #include "core/entity_handle.hpp"
 #include "ecs_world_actor.h"
-#include "convert_to_ecs.generated.h"
+#include "convert_to_entity.generated.h"
 
 UCLASS(ClassGroup = (ECS), meta = (BlueprintSpawnableComponent), Config = Game)
-class ENTTUE_API UConvertToEcsComponent : public UActorComponent {
+class ENTTUE_API UConvertToEntityComponent : public UActorComponent {
 	GENERATED_BODY()
 
     public:
-	UConvertToEcsComponent();
+	UConvertToEntityComponent();
 	void BeginPlay() override;
 
     private:

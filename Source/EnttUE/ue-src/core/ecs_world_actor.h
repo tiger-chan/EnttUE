@@ -9,20 +9,25 @@ UCLASS()
 class ENTTUE_API AEcsWorldActor : public AActor {
 	GENERATED_BODY()
     public:
+	AEcsWorldActor();
+
 	tc::world &get_world()
 	{
-		check(ecs_world.IsValid()) return *ecs_world;
+		check(world_.IsValid()) return *world_;
 	}
-	
+
 	const tc::world &get_world() const
 	{
-		check(ecs_world.IsValid()) return *ecs_world;
+		check(world_.IsValid()) return *world_;
 	}
 
     protected:
 	void BeginPlay() override;
-	virtual void register_systems(tc::world &world) { };
+	void Tick(float delta_time) override;
+	virtual void register_systems(tc::world &world){};
+
+	bool run_systems_in_parallel = false;
 
     private:
-	TSharedPtr<tc::world> ecs_world;
+	TSharedPtr<tc::world> world_;
 };

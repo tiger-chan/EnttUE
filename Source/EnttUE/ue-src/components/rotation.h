@@ -1,10 +1,12 @@
 #pragma once
 
+#include "CoreMinimal.h"
+#include "entt/entity/registry.hpp"
 #include "core/component_authoring.h"
 #include "rotation.generated.h"
 
 USTRUCT(BlueprintType)
-struct ENTTUE_API FRotation : public FVector {
+struct ENTTUE_API FRotation : public FQuat {
 	GENERATED_BODY()
 };
 

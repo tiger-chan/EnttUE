@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "core/entity_handle.hpp"
-#include "core/ecs_registry.hpp"
+#include "core/fwd.hpp"
 #include "component_authoring.generated.h"
 
 USTRUCT()
