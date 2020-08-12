@@ -10,7 +10,9 @@ struct ENTTUE_API FMarshalToActor {
 	GENERATED_BODY()
 
     public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool world_space = true;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool sweep = false;
 };
 

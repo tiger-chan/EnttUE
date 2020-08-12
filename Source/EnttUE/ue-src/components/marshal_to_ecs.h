@@ -10,6 +10,7 @@ struct ENTTUE_API FMarshalToEcs {
 	GENERATED_BODY()
 
     public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool world_space = true;
 };
 
