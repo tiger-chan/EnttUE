@@ -21,5 +21,6 @@ struct ENTTUE_API FActorTransformAuthoring : public FComponentAuthoring {
 		registry.emplace_or_replace<FActorTransform>(handle.id, value);
 	}
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FActorTransform value;
 };

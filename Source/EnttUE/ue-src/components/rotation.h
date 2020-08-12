@@ -21,5 +21,6 @@ struct ENTTUE_API FRotationAuthoring : public FComponentAuthoring {
 		registry.emplace_or_replace<FRotation>(handle.id, value);
 	}
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FRotation value;
 };

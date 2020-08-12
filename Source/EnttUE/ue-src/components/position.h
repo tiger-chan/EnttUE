@@ -21,5 +21,6 @@ struct ENTTUE_API FPositionAuthoring : public FComponentAuthoring {
 		registry.emplace_or_replace<FPosition>(handle.id, value);
 	}
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FPosition value;
 };

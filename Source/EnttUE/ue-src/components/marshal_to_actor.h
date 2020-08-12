@@ -26,5 +26,6 @@ struct ENTTUE_API FMarshalToActorAuthoring : public FComponentAuthoring {
 		registry.emplace_or_replace<FMarshalToActor>(handle.id, value);
 	}
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FMarshalToActor value;
 };

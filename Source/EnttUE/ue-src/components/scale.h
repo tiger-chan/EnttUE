@@ -21,5 +21,6 @@ struct ENTTUE_API FScaleAuthoring : public FComponentAuthoring {
 		registry.emplace_or_replace<FScale>(handle.id, value);
 	}
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FScale value;
 };

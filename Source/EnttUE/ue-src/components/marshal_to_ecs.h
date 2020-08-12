@@ -24,5 +24,6 @@ struct ENTTUE_API FMarshalToEcsAuthoring : public FComponentAuthoring {
 		registry.emplace_or_replace<FMarshalToEcs>(handle.id, value);
 	}
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FMarshalToEcs value;
 };
