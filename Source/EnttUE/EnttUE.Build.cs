@@ -7,8 +7,7 @@ public class EnttUE : ModuleRules
 {
 	public EnttUE(ReadOnlyTargetRules Target) : base(Target)
 	{
-		//PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		PCHUsage = PCHUsageMode.NoSharedPCHs;
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PrivatePCHHeaderFile = Path.Combine(ModuleDirectory, "ue-src", "EnttUE.h");
 		CppStandard = CppStandardVersion.Cpp17;
 		bEnableExceptions = true;

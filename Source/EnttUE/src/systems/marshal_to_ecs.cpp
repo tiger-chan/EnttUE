@@ -5,6 +5,12 @@
 #include "components/scale.h"
 #include "components/rotation.h"
 #include "components/marshal_to_ecs.h"
+#include "logging.hpp"
+
+DECLARE_CYCLE_STAT(TEXT("ECS: Location Unpacking"), STAT_LocationUnpacking, STATGROUP_ECS);
+DECLARE_CYCLE_STAT(TEXT("ECS: Scale Unpacking"), STAT_ScaleUnpacking, STATGROUP_ECS);
+DECLARE_CYCLE_STAT(TEXT("ECS: Rotation Unpacking"), STAT_RotionUnpacking, STATGROUP_ECS);
+DECLARE_CYCLE_STAT(TEXT("ECS: Marshal Transform - ECS"), STAT_MarshalToECS, STATGROUP_ECS);
 
 namespace tc
 {
@@ -19,8 +25,10 @@ void marshal_to_ecs_system::on_schedule()
 		.add_read<FActorReference>()
 		.add_write<FActorTransform>()
 		.schedule([](auto &observer, ecs_registry &reg) {
+			SCOPE_CYCLE_COUNTER(STAT_LocationUnpacking);
 			for (const auto &id : observer) {
-				TWeakObjectPtr<AActor> &ref = reg.get<FActorReference>(id).actor;
+				FActorReference &actor_ref = reg.get<FActorReference>(id);
+				TWeakObjectPtr<AActor> &ref = actor_ref.actor;
 				check(ref.IsValid());
 				AActor *actor = ref.Get();
 
@@ -28,7 +36,7 @@ void marshal_to_ecs_system::on_schedule()
 				reg.emplace_or_replace<FActorTransform>(id, transform);
 			}
 			observer.clear();
-			UE_LOG(LogEnttUE, Log, TEXT("Ran: Marshal to ECS"));
+			UE_LOG(LogEnttUE, VeryVerbose, TEXT("Ran: Marshal to ECS"));
 		});
 
 	entities()
@@ -36,6 +44,7 @@ void marshal_to_ecs_system::on_schedule()
 		.add_read<FActorTransform>()
 		.add_write<FPosition>()
 		.schedule_parallel([](auto &observer, ecs_registry &reg) {
+			SCOPE_CYCLE_COUNTER(STAT_ScaleUnpacking);
 			for (const auto &id : observer) {
 				FActorTransform &transform = reg.get<FActorTransform>(id);
 				reg.patch<FPosition>(id, [&transform](FPosition &val) {
@@ -43,7 +52,8 @@ void marshal_to_ecs_system::on_schedule()
 				});
 			}
 			observer.clear();
-			UE_LOG(LogEnttUE, Log, TEXT("Ran: Marshal to ECS - Location unpacking"));
+			UE_LOG(LogEnttUE, VeryVerbose,
+			       TEXT("Ran: Marshal to ECS - Location unpacking"));
 		});
 
 	entities()
@@ -51,6 +61,7 @@ void marshal_to_ecs_system::on_schedule()
 		.add_read<FActorTransform>()
 		.add_write<FScale>()
 		.schedule_parallel([](auto &observer, ecs_registry &reg) {
+			SCOPE_CYCLE_COUNTER(STAT_RotionUnpacking);
 			for (const auto &id : observer) {
 				FActorTransform &transform = reg.get<FActorTransform>(id);
 				reg.patch<FScale>(id, [&transform](FScale &val) {
@@ -58,7 +69,8 @@ void marshal_to_ecs_system::on_schedule()
 				});
 			}
 			observer.clear();
-			UE_LOG(LogEnttUE, Log, TEXT("Ran: Marshal to ECS - Scale unpacking"));
+			UE_LOG(LogEnttUE, VeryVerbose,
+			       TEXT("Ran: Marshal to ECS - Scale unpacking"));
 		});
 
 	entities()
@@ -66,6 +78,7 @@ void marshal_to_ecs_system::on_schedule()
 		.add_read<FActorTransform>()
 		.add_write<FRotation>()
 		.schedule_parallel([](auto &observer, ecs_registry &reg) {
+			SCOPE_CYCLE_COUNTER(STAT_MarshalToECS);
 			for (const auto &id : observer) {
 				FActorTransform &transform = reg.get<FActorTransform>(id);
 				reg.patch<FRotation>(id, [&transform](FRotation &val) {
@@ -73,7 +86,8 @@ void marshal_to_ecs_system::on_schedule()
 				});
 			}
 			observer.clear();
-			UE_LOG(LogEnttUE, Log, TEXT("Ran: Marshal to ECS - Rotation unpacking"));
+			UE_LOG(LogEnttUE, VeryVerbose,
+			       TEXT("Ran: Marshal to ECS - Rotation unpacking"));
 		});
 }
 } // namespace tc

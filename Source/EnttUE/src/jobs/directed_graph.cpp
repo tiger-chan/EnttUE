@@ -15,12 +15,12 @@ directed_graph::directed_graph(uint32_t node_count) : count_{ node_count }
 
 void directed_graph::add(entt::id_type id, const TArray<entt::id_type> &dependencies)
 {
-	index_to_id_.FindOrAdd(id_to_index_.Num(), id);
 	auto new_id = id_to_index_.FindOrAdd(id, id_to_index_.Num());
+	index_to_id_.FindOrAdd(new_id, id);
 
 	for (const auto dep_id : dependencies) {
-		index_to_id_.FindOrAdd(id_to_index_.Num(), dep_id);
 		auto out_id = id_to_index_.FindOrAdd(dep_id, id_to_index_.Num());
+		index_to_id_.FindOrAdd(out_id, dep_id);
 		adjacencies_[get_index(new_id, out_id)] = 1;
 	}
 }
@@ -80,13 +80,12 @@ std::vector<sortable_graph::data_t> sortable_graph::sorted_nodes() const
 		auto &data = counts.emplace_back(data_t{ kv.Key });
 		auto dep = dependencies.emplace(kv.Key, std::unordered_set<entt::id_type>{}).first;
 		for (auto x = 0u; x < count_; ++x) {
-			bool adjacent = adjacencies_[get_index(x, kv.Value)] != 0;
+			bool adjacent = adjacencies_[get_index(kv.Value, x)] != 0;
 			if (!adjacent) {
 				continue;
 			}
 			auto adj_id = index_to_id_[x];
-			data.dependencies.emplace(index_to_id_[x]);
-			dep->second.emplace(adj_id);
+			data.dependencies.emplace(adj_id);
 		}
 	}
 
@@ -102,7 +101,11 @@ std::vector<sortable_graph::data_t> sortable_graph::sorted_nodes() const
 			sorted_[--index] = data_t{ data.id, dependencies[data.id] };
 
 			for (auto &other_data : counts) {
-				other_data.dependencies.erase(data.id);
+				if (other_data.dependencies.erase(data.id) == 0) {
+					continue;
+				}
+				
+				dependencies[other_data.id].emplace(data.id);
 			}
 		} else {
 			auto next_without_dependents = std::find_if(

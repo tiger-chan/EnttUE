@@ -11,7 +11,7 @@ struct ENTTUE_API FMarshalToEcs {
 
     public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	bool world_space = true;
+	bool world_space{ true };
 };
 
 USTRUCT(BlueprintType)

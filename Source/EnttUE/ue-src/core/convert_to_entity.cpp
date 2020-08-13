@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "component_authoring.h"
 #include "components/actor_reference.h"
+#include "logging.hpp"
 
 UConvertToEntityComponent::UConvertToEntityComponent()
 {
@@ -33,6 +34,7 @@ tc::entity_handle UConvertToEntityComponent::register_world()
 	}
 
 	if (world_actor == nullptr) {
+		UE_LOG(LogEnttUE, Warning, TEXT("ECS World was not found spawning a new instance"));
 		world_actor = world->SpawnActor<AEcsWorldActor>(world_type);
 	}
 
@@ -49,7 +51,7 @@ void UConvertToEntityComponent::register_components()
 	auto iter = TFieldIterator<FStructProperty>(GetOwner()->GetClass());
 	for (; iter; ++iter) {
 		FStructProperty *prop = *iter;
-		if (prop->Struct != TBaseStructure<FComponentAuthoring>::Get()) {
+		if (!prop->Struct->IsChildOf(FComponentAuthoring::StaticStruct())) {
 			continue;
 		}
 

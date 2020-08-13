@@ -8,5 +8,5 @@ struct ENTTUE_API FActorReference {
 	GENERATED_BODY()
 
     public:
-	TWeakObjectPtr<AActor> actor;
+	TWeakObjectPtr<AActor> actor{ nullptr };
 };

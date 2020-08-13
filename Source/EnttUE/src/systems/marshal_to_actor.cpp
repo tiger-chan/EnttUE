@@ -6,13 +6,19 @@
 #include "components/rotation.h"
 #include "components/marshal_to_actor.h"
 #include "marshal_to_ecs.hpp"
+#include "logging.hpp"
+
+DECLARE_CYCLE_STAT(TEXT("ECS: Location Packing"), STAT_LocationPacking, STATGROUP_ECS);
+DECLARE_CYCLE_STAT(TEXT("ECS: Scale Packing"), STAT_ScalePacking, STATGROUP_ECS);
+DECLARE_CYCLE_STAT(TEXT("ECS: Rotation Packing"), STAT_RotionPacking, STATGROUP_ECS);
+DECLARE_CYCLE_STAT(TEXT("ECS: Marshal Transform - Actor"), STAT_MarshalToActor, STATGROUP_ECS);
 
 namespace tc
 {
 void marshal_to_actor_system::on_create()
 {
 	auto marshal_to_ecs = world().get_or_create_job<marshal_to_ecs_system>();
-	marshal_to_ecs->add_job_dependency(handle());
+	add_job_dependency(marshal_to_ecs->handle());
 }
 
 void marshal_to_actor_system::on_schedule()
@@ -23,14 +29,17 @@ void marshal_to_actor_system::on_schedule()
 		.add_read<FPosition>()
 		.add_write<FActorTransform>()
 		.schedule([](auto &observer, ecs_registry &reg) {
+			SCOPE_CYCLE_COUNTER(STAT_LocationPacking);
 			for (const auto &id : observer) {
 				FPosition &value = reg.get<FPosition>(id);
 				reg.patch<FActorTransform>(id, [&value](FActorTransform &val) {
 					val.SetLocation(value);
 				});
+
+				auto& tmp = reg.get<FActorTransform>(id);
 			}
 			observer.clear();
-			UE_LOG(LogEnttUE, Log, TEXT("Ran: Marshal to Actor - Location packing"));
+			UE_LOG(LogEnttUE, VeryVerbose, TEXT("Ran: Marshal to Actor - Location packing"));
 		});
 
 	entities()
@@ -39,6 +48,7 @@ void marshal_to_actor_system::on_schedule()
 		.add_read<FScale>()
 		.add_write<FActorTransform>()
 		.schedule([](auto &observer, ecs_registry &reg) {
+			SCOPE_CYCLE_COUNTER(STAT_ScalePacking);
 			for (const auto &id : observer) {
 				FScale &value = reg.get<FScale>(id);
 				reg.patch<FActorTransform>(id, [&value](FActorTransform &val) {
@@ -46,7 +56,7 @@ void marshal_to_actor_system::on_schedule()
 				});
 			}
 			observer.clear();
-			UE_LOG(LogEnttUE, Log, TEXT("Ran: Marshal to Actor - Scale packing"));
+			UE_LOG(LogEnttUE, VeryVerbose, TEXT("Ran: Marshal to Actor - Scale packing"));
 		});
 
 	entities()
@@ -55,6 +65,7 @@ void marshal_to_actor_system::on_schedule()
 		.add_read<FRotation>()
 		.add_write<FActorTransform>()
 		.schedule([](auto &observer, ecs_registry &reg) {
+			SCOPE_CYCLE_COUNTER(STAT_RotionPacking);
 			for (const auto &id : observer) {
 				FRotation &value = reg.get<FRotation>(id);
 				reg.patch<FActorTransform>(id, [&value](FActorTransform &val) {
@@ -62,7 +73,7 @@ void marshal_to_actor_system::on_schedule()
 				});
 			}
 			observer.clear();
-			UE_LOG(LogEnttUE, Log, TEXT("Ran: Marshal to Actor - Rotation packing"));
+			UE_LOG(LogEnttUE, VeryVerbose, TEXT("Ran: Marshal to Actor - Rotation packing"));
 		});
 
 	entities()
@@ -71,6 +82,7 @@ void marshal_to_actor_system::on_schedule()
 		.add_read<FActorTransform, FMarshalToActor>()
 		.add_write<FActorReference, FActorTransform>()
 		.schedule([](auto &observer, ecs_registry &reg) {
+			SCOPE_CYCLE_COUNTER(STAT_MarshalToActor);
 			for (const auto &id : observer) {
 				FMarshalToActor &marshalling = reg.get<FMarshalToActor>(id);
 
@@ -102,8 +114,8 @@ void marshal_to_actor_system::on_schedule()
 					transform.SetLocation(results.Location);
 				}
 			}
-			UE_LOG(LogEnttUE, Log, TEXT("Ran: Marshal to Actor"));
 			observer.clear();
+			UE_LOG(LogEnttUE, VeryVerbose, TEXT("Ran: Marshal to Actor"));
 		});
 }
 } // namespace tc

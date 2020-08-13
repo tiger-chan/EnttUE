@@ -11,9 +11,9 @@ struct ENTTUE_API FMarshalToActor {
 
     public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	bool world_space = true;
+	bool world_space{ true };
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	bool sweep = false;
+	bool sweep{ false };
 };
 
 USTRUCT(BlueprintType)

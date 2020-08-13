@@ -27,3 +27,8 @@ template <typename...> struct task_query_constructor;
 template <typename...> struct task_reactive_constructor;
 
 } // namespace tc
+
+#include "entt/core/type_info.hpp"
+
+template <typename Type> struct entt::type_index<Type> {
+};

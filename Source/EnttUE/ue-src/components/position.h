@@ -8,6 +8,9 @@
 USTRUCT(BlueprintType)
 struct ENTTUE_API FPosition : public FVector {
 	GENERATED_BODY()
+	public:
+	using FVector::FVector;
+	FPosition(const FVector& other) : FVector(other) {}
 };
 
 USTRUCT(BlueprintType)
