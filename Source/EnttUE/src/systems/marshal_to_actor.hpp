@@ -11,6 +11,11 @@ class ENTTUE_API marshal_to_actor_system : public system_base<marshal_to_actor_s
     private:
 	void on_create();
 	void on_schedule();
+
+	static void position_packing(entt::observer& observer, tc::ecs_registry& reg);
+	static void scale_packing(entt::observer& observer, tc::ecs_registry& reg);
+	static void rotation_packing(entt::observer& observer, tc::ecs_registry& reg);
+	static void marshal_to_actor(entt::observer& observer, tc::ecs_registry& reg);
 };
 
 } // namespace tc

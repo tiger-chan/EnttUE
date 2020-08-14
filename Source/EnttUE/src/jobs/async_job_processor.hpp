@@ -67,7 +67,7 @@ class async_job_processor : public job_processor {
 
 	TFuture<void> spawn_task(job_base::iterator &iter, ecs_registry &reg, entt::id_type id)
 	{
-		return Async(EAsyncExecution::TaskGraph, run_task(*iter, reg),
+		return Async((*iter)->execution_method, run_task(*iter, reg),
 			     complete_task(reg, iter, id));
 	}
 

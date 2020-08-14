@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Async/Async.h"
 #include "task_data_access.hpp"
 
 namespace tc
@@ -31,6 +32,7 @@ template <typename... Args> struct task {
 	}
 
 	bool can_parallelize = false;
+	EAsyncExecution execution_method = EAsyncExecution::TaskGraph;
 	task_data_access data;
 };
 } // namespace tc

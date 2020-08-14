@@ -65,19 +65,21 @@ struct job_requirements {
 		return *static_cast<Requirements *>(this);
 	}
 
-	template <typename Func> void schedule(Func func) noexcept
+	template <typename Func> void schedule(Func func, EAsyncExecution execution_method = EAsyncExecution::TaskGraph) noexcept
 	{
 		assert(task.IsValid());
-		static_cast<Requirements *>(this)->set_work(*task_, func);
+		static_cast<Requirements *>(this)->set_work(*task_, std::forward<Func>(func));
 
+		task_->execution_method = execution_method;
 		system_->add_task(task_);
 	}
 
-	template <typename Func> void schedule_parallel(Func func) noexcept
+	template <typename Func> void schedule_parallel(Func func, EAsyncExecution execution_method = EAsyncExecution::TaskGraph) noexcept
 	{
 		assert(task.IsValid());
-		static_cast<Requirements *>(this)->set_work(*task_, func);
+		static_cast<Requirements *>(this)->set_work(*task_, std::forward<Func>(func));
 
+		task_->execution_method = execution_method;
 		task_->can_parallelize = true;
 		system_->add_task(task_);
 	}
