@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EnttUE.h"
+#include "entt/core/type_traits.hpp"
 
 namespace tc
 {
@@ -22,9 +23,13 @@ struct directed_graph;
 
 struct sortable_graph;
 
-template <typename...> struct task_query_constructor;
+template <typename...> struct entity_query_builder;
 
-template <typename...> struct task_reactive_constructor;
+namespace internal
+{
+template <typename... Type> struct job_exclude_t : public entt::type_list<Type...> {
+};
+} // namespace internal
 
 } // namespace tc
 

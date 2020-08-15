@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "core/ecs_world.hpp"
 #include "job_base.hpp"
-#include "task_query.hpp"
+#include "entity_query_builder.hpp"
 #include "task.hpp"
 #include "core/linked_list.hpp"
 
@@ -29,7 +29,7 @@ template <typename System> class system_base : public job_base {
     protected:
 	auto entities()
 	{
-		return task_query_constructor<System, entt::type_list<>>(
+		return entity_query_builder<System, entt::type_list<>>(
 			static_cast<System *>(this), &world().registry());
 	}
 };

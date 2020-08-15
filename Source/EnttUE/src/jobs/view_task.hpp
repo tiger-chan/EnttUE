@@ -46,4 +46,76 @@ struct view_job_requirements<System, Type, entt::type_list<Args...>, entt::type_
 	}
 };
 
+namespace internal
+{
+template <typename...> struct entity_view_query_builder;
+
+template <typename System, typename... Args>
+struct entity_view_query_builder<System, entt::type_list<Args...>> {
+	entity_view_query_builder(System *sys) : system{ sys }
+	{
+	}
+
+	template <typename... Excluded> auto with_none() const noexcept
+	{
+		return entity_view_query_builder<System, entt::type_list<Args...>,
+						 job_exclude_t<Excluded...>>{ system };
+	};
+
+	template <typename... Included> auto with_all() const noexcept
+	{
+		return entity_view_query_builder<System, entt::type_list<Args...>, job_exclude_t<>,
+						 Included...>{ system };
+	}
+
+    private:
+	System *system;
+};
+
+template <typename System, typename... Args, typename... Excluded, typename... Included>
+struct entity_view_query_builder<System, entt::type_list<Args...>, job_exclude_t<Excluded...>,
+			      Included...> {
+	entity_view_query_builder(System *sys) : system{ sys }
+	{
+	}
+
+	template <typename... ExExcluded> auto with_none() const noexcept
+	{
+		return entity_view_query_builder<System, entt::type_list<Args...>,
+					      job_exclude_t<Excluded..., ExExcluded...>,
+					      Included...>{ system };
+	};
+
+	template <typename... ExIncluded> auto with_all() const noexcept
+	{
+		return entity_view_query_builder<System, entt::type_list<Args...>,
+					      job_exclude_t<Excluded...>, Included...,
+					      ExIncluded...>{ system };
+	}
+
+	using requirement_t =
+		view_job_requirements<System, view_task<Args...>, entt::type_list<Args...>,
+				      entt::type_list<Included...>, entt::type_list<Excluded...>>;
+
+	template <typename... Reads> requirement_t add_read()
+	{
+		return requirement_t{ system, make_task() }.add_read<Reads...>();
+	}
+
+	template <typename... Writes> requirement_t add_write()
+	{
+		return requirement_t{ system, make_task() }.add_write<Writes...>();
+	}
+
+    private:
+	TSharedPtr<view_task<Args...>> make_task()
+	{
+		return MakeShared<view_task<Args...>>();
+	}
+
+	System *system;
+};
+
+}; // namespace internal
+
 } // namespace tc
