@@ -3,136 +3,12 @@
 #include "CoreMinimal.h"
 #include "core/fwd.hpp"
 #include "fwd.hpp"
-#include "entt/core/type_traits.hpp"
-#include "entt/entity/observer.hpp"
 #include "task.hpp"
+#include "reactive_task.hpp"
+#include "view_task.hpp"
 
 namespace tc
 {
-template <typename Type, entt::id_type Id> struct observer_wraper {
-	template <typename Collector>
-	observer_wraper(ecs_registry &reg, Collector collector) : observer{ reg, collector }
-	{
-	}
-	entt::observer observer;
-};
-
-template <typename... Args> struct observer_task : public task<ecs_registry &, Args...> {
-	using work_t = TFunction<void(entt::observer &, ecs_registry &, Args &&...)>;
-	using observer_request_t = TFunction<void(ecs_registry &, entt::observer *&)>;
-
-	void run(ecs_registry &reg, Args &&... args)
-	{
-		entt::observer *observer = nullptr;
-		observer_retrieval(reg, observer);
-		work(*observer, reg, std::forward<Args>(args)...);
-	}
-
-	work_t work;
-	observer_request_t observer_retrieval;
-};
-
-template <typename... Args> struct view_task : public task<ecs_registry &, Args...> {
-	using work_t = TFunction<void(ecs_registry &, Args &&...)>;
-
-	void run(ecs_registry &reg, Args &&... args)
-	{
-		work(reg, std::forward<Args>(args)...);
-	}
-
-	work_t work;
-};
-
-template <typename Requirements, typename System, typename Type, typename... Args>
-struct job_requirements {
-	job_requirements(System *system, TSharedPtr<Type> &&task) : system_{ system }, task_{ task }
-	{
-	}
-
-	template <typename... Reads> Requirements &add_read() noexcept
-	{
-		assert(task_.IsValid());
-		task_data_access &data = task_->data;
-		(data.add<Reads>(access_t::read), ...);
-		return *static_cast<Requirements *>(this);
-	}
-
-	template <typename... Writes> Requirements &add_write() noexcept
-	{
-		assert(task_.IsValid());
-		task_data_access &data = task_->data;
-		(data.add<Writes>(access_t::write), ...);
-		return *static_cast<Requirements *>(this);
-	}
-
-	template <typename Func> void schedule(Func func, EAsyncExecution execution_method = EAsyncExecution::TaskGraph) noexcept
-	{
-		assert(task.IsValid());
-		static_cast<Requirements *>(this)->set_work(*task_, std::forward<Func>(func));
-
-		task_->execution_method = execution_method;
-		system_->add_task(task_);
-	}
-
-	template <typename Func> void schedule_parallel(Func func, EAsyncExecution execution_method = EAsyncExecution::TaskGraph) noexcept
-	{
-		assert(task.IsValid());
-		static_cast<Requirements *>(this)->set_work(*task_, std::forward<Func>(func));
-
-		task_->execution_method = execution_method;
-		task_->can_parallelize = true;
-		system_->add_task(task_);
-	}
-
-    private:
-	System *system_;
-	TSharedPtr<Type> task_;
-};
-
-template <typename System, typename Type, typename... Args>
-struct observer_job_requirements
-	: public job_requirements<observer_job_requirements<System, Type, Args...>, System, Type,
-				  Args...> {
-	using Super = job_requirements<observer_job_requirements<System, Type, Args...>, System,
-				       Type, Args...>;
-	using Super::Super;
-	friend struct Super;
-
-    private:
-	template <typename Func> void set_work(Type &task, Func func)
-	{
-		task.work = [func](entt::observer &o, ecs_registry &reg, Args &&... args) {
-			func(o, reg, std::forward<Args>(args)...);
-		};
-	}
-};
-
-template <typename System, typename Type, typename...> struct view_job_requirements;
-
-template <typename System, typename Type, typename... Args, typename... Included,
-	  typename... Excluded>
-struct view_job_requirements<System, Type, entt::type_list<Args...>, entt::type_list<Included...>,
-			     entt::type_list<Excluded...>>
-	: public job_requirements<
-		  view_job_requirements<System, Type, entt::type_list<Args...>,
-					entt::type_list<Included...>, entt::type_list<Excluded...>>,
-		  System, Type, Args...> {
-	using Super = job_requirements<
-		view_job_requirements<System, Type, entt::type_list<Args...>,
-				      entt::type_list<Included...>, entt::type_list<Excluded...>>,
-		System, Type, Args...>;
-	using Super::Super;
-	friend struct Super;
-
-    private:
-	template <typename Func> void set_work(Type &task, Func func)
-	{
-		task.work = [func](ecs_registry &reg, Args &&... args) {
-			func(reg.view<Included...>(entt::exclude<Excluded...>), reg,
-			     std::forward<Args>(args)...);
-		};
-	}
-};
 
 template <typename... Type> struct job_exclude_t : public entt::type_list<Type...> {
 };
@@ -299,7 +175,7 @@ struct task_reactive_constructor<
 										      registry_ };
 	}
 
-	using requirement_t = observer_job_requirements<System, observer_task<Args...>, Args...>;
+	using requirement_t = observer_job_requirements<System, reactive_task<Args...>, Args...>;
 
 	template <typename... Reads> requirement_t add_read()
 	{
@@ -314,8 +190,8 @@ struct task_reactive_constructor<
     private:
 	auto make_task()
 	{
-		auto ptr = MakeShared<observer_task<Args...>>();
-		observer_task<Args...> &task = *ptr;
+		auto ptr = MakeShared<reactive_task<Args...>>();
+		reactive_task<Args...> &task = *ptr;
 
 		using wrapper_t = observer_wraper<System, entt::type_info<collector_t>::id()>;
 		registry_->set<wrapper_t>(*registry_, collector_);

@@ -11,7 +11,7 @@ namespace tc
 {
 template <typename System> class system_base : public job_base {
 	template <typename Requirements, typename System, typename Type, typename... Args>
-	friend struct job_requirements;
+	friend struct job_requirements_builder;
 
     public:
 	virtual ~system_base() = default;
