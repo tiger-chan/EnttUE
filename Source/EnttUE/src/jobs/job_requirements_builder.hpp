@@ -2,9 +2,10 @@
 
 namespace tc
 {
-	template <typename Requirements, typename System, typename Type, typename... Args>
+template <typename Requirements, typename System, typename Type, typename... Args>
 struct job_requirements_builder {
-	job_requirements_builder(System *system, TSharedPtr<Type> &&task) : system_{ system }, task_{ task }
+	job_requirements_builder(System *system, TSharedPtr<Type> &&task)
+		: system_{ system }, task_{ task }
 	{
 	}
 
@@ -24,7 +25,9 @@ struct job_requirements_builder {
 		return *static_cast<Requirements *>(this);
 	}
 
-	template <typename Func> void schedule(Func func, EAsyncExecution execution_method = EAsyncExecution::TaskGraph) noexcept
+	template <typename Func>
+	void schedule(Func func,
+		      EAsyncExecution execution_method = EAsyncExecution::TaskGraph) noexcept
 	{
 		assert(task.IsValid());
 		static_cast<Requirements *>(this)->set_work(*task_, std::forward<Func>(func));
@@ -33,7 +36,10 @@ struct job_requirements_builder {
 		system_->add_task(task_);
 	}
 
-	template <typename Func> void schedule_parallel(Func func, EAsyncExecution execution_method = EAsyncExecution::TaskGraph) noexcept
+	template <typename Func>
+	void
+	schedule_parallel(Func func,
+			  EAsyncExecution execution_method = EAsyncExecution::TaskGraph) noexcept
 	{
 		assert(task.IsValid());
 		static_cast<Requirements *>(this)->set_work(*task_, std::forward<Func>(func));
@@ -43,8 +49,20 @@ struct job_requirements_builder {
 		system_->add_task(task_);
 	}
 
+	template <typename Func>
+	void schedule_for_each(Func func,
+		      EAsyncExecution execution_method = EAsyncExecution::TaskGraph) noexcept
+	{
+		assert(task.IsValid());
+		static_cast<Requirements *>(this)->set_work_for_each(*task_, std::forward<Func>(func));
+
+		task_->execution_method = execution_method;
+		system_->add_task(task_);
+	}
+
     private:
 	System *system_;
 	TSharedPtr<Type> task_;
 };
+
 } // namespace tc

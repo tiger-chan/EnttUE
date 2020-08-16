@@ -74,7 +74,7 @@ struct entity_view_query_builder<System, entt::type_list<Args...>> {
 
 template <typename System, typename... Args, typename... Excluded, typename... Included>
 struct entity_view_query_builder<System, entt::type_list<Args...>, job_exclude_t<Excluded...>,
-			      Included...> {
+				 Included...> {
 	entity_view_query_builder(System *sys) : system{ sys }
 	{
 	}
@@ -82,15 +82,15 @@ struct entity_view_query_builder<System, entt::type_list<Args...>, job_exclude_t
 	template <typename... ExExcluded> auto with_none() const noexcept
 	{
 		return entity_view_query_builder<System, entt::type_list<Args...>,
-					      job_exclude_t<Excluded..., ExExcluded...>,
-					      Included...>{ system };
+						 job_exclude_t<Excluded..., ExExcluded...>,
+						 Included...>{ system };
 	};
 
 	template <typename... ExIncluded> auto with_all() const noexcept
 	{
 		return entity_view_query_builder<System, entt::type_list<Args...>,
-					      job_exclude_t<Excluded...>, Included...,
-					      ExIncluded...>{ system };
+						 job_exclude_t<Excluded...>, Included...,
+						 ExIncluded...>{ system };
 	}
 
 	using requirement_t =
