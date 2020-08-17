@@ -5,6 +5,7 @@
 #include "entt/entity/registry.hpp"
 #include "jobs/sync_job_processor.hpp"
 #include "jobs/async_job_processor.hpp"
+#include "tick_context.hpp"
 
 namespace tc
 {
@@ -16,7 +17,11 @@ class world {
 
 	void execute(float delta_time)
 	{
-		processor_->execute(registry_);
+		if (!processor_->running()) {
+			auto &tick = registry_.set<tc::tick_context>();
+			tick.delta_time = delta_time;
+			processor_->execute(registry_);
+		}
 	}
 
 	ecs_registry &registry()

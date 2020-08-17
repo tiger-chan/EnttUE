@@ -27,6 +27,11 @@ class job_processor {
 	job_processor &operator=(const job_processor &) = delete;
 	job_processor &operator=(job_processor &&) = delete;
 
+	bool running() const
+	{
+		return is_running;
+	}
+
 	void execute(ecs_registry &reg)
 	{
 		if (is_running) {

@@ -49,17 +49,6 @@ struct job_requirements_builder {
 		system_->add_task(task_);
 	}
 
-	template <typename Func>
-	void schedule_for_each(Func func,
-		      EAsyncExecution execution_method = EAsyncExecution::TaskGraph) noexcept
-	{
-		assert(task.IsValid());
-		static_cast<Requirements *>(this)->set_work_for_each(*task_, std::forward<Func>(func));
-
-		task_->execution_method = execution_method;
-		system_->add_task(task_);
-	}
-
     private:
 	System *system_;
 	TSharedPtr<Type> task_;
