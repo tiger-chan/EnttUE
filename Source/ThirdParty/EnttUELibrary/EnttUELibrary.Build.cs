@@ -13,7 +13,8 @@ public class EnttUELibrary : ModuleRules
 		var plugin_dir = Path.Combine(ModuleDirectory);
 
 		PublicIncludePaths.AddRange(new string[] {
-				Path.Combine(plugin_dir, "entt", "src")
+				Path.Combine(plugin_dir, "entt", "src"),
+				Path.Combine(plugin_dir, "lib-gradient-noise", "src")
 			});
 	}
 }
