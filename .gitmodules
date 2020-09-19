@@ -1,6 +1,3 @@
 [submodule "Source/ThirdParty/EnttUELibrary/entt"]
 	path = Source/ThirdParty/EnttUELibrary/entt
 	url = git@github.com:tiger-chan/entt.git
-[submodule "Source/ThirdParty/EnttUELibrary/lib-gradient-noise"]
-	path = Source/ThirdParty/EnttUELibrary/lib-gradient-noise
-	url = https://github.com/tiger-chan/lib-gradient-noise.git
