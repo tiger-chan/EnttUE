@@ -6,8 +6,8 @@
 
 namespace tc
 {
-template <typename... Args> struct task {
-	virtual ~task() = default;
+template <typename... Args> struct executable_task {
+	virtual ~executable_task() = default;
 	virtual void run(Args &&...)
 	{
 	}

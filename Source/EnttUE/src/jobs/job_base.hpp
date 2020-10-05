@@ -17,7 +17,7 @@ class ENTTUE_API job_base {
 	friend class job_processor;
 
     public:
-	using job_task = task<ecs_registry &>;
+	using job_task = executable_task<ecs_registry &>;
 	class job_task_list : public linked_list<TSharedPtr<job_task>> {
 	};
 	using iterator = job_task_list::iterator;

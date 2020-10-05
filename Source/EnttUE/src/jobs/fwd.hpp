@@ -15,7 +15,7 @@ ENTTUE_API TUniquePtr<job_processor> make_processor(bool run_parallel = false);
 
 struct task_data_access;
 
-template <typename... Args> struct task;
+template <typename... Args> struct executable_task;
 
 template <typename System> class system_base;
 

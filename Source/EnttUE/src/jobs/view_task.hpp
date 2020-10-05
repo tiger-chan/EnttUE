@@ -3,12 +3,12 @@
 #include "CoreMinimal.h"
 #include "core/fwd.hpp"
 #include "fwd.hpp"
-#include "task.hpp"
+#include "executable_task.hpp"
 #include "job_requirements_builder.hpp"
 
 namespace tc
 {
-template <typename... Args> struct view_task : public task<ecs_registry &, Args...> {
+template <typename... Args> struct view_task : public executable_task<ecs_registry &, Args...> {
 	using work_t = TFunction<void(ecs_registry &, Args &&...)>;
 
 	void run(ecs_registry &reg, Args &&... args)

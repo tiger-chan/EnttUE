@@ -4,7 +4,7 @@
 #include "core/fwd.hpp"
 #include "fwd.hpp"
 #include "entt/entity/observer.hpp"
-#include "task.hpp"
+#include "executable_task.hpp"
 #include "job_requirements_builder.hpp"
 
 namespace tc
@@ -17,7 +17,7 @@ template <typename Type, entt::id_type Id> struct observer_wraper {
 	entt::observer observer;
 };
 
-template <typename... Args> struct reactive_task : public task<ecs_registry &, Args...> {
+template <typename... Args> struct reactive_task : public executable_task<ecs_registry &, Args...> {
 	using work_t = TFunction<void(entt::observer &, ecs_registry &, Args &&...)>;
 	using observer_request_t = TFunction<void(ecs_registry &, entt::observer *&)>;
 
